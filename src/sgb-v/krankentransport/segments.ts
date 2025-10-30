@@ -64,21 +64,24 @@ export const EKT = (
     /** How many kilometers were driven, if applicable */
     kilometersDriven: number | undefined,
     /** Date and time at which the service started */
-    startDateTime: Date,
+    startDateTime: Date | undefined,
     /** Date and time at which the service ended */
-    endDateTime: Date
-) => segment(
-    "EKT",
-    leistungserbringergruppeCode(leistungserbringergruppe),
-    char(positionsnummer, 6),
-    decimal(amount, 4, 2),
-    decimal(abrechnungspositionPrice, 10, 2),
-    date(startDateTime),
-    decimal(kilometersDriven, 4, 2),
-    time(startDateTime),
-    time(endDateTime),
-    int(duration(startDateTime, endDateTime, "minutes"), 0, 9999)
-)
+    endDateTime: Date | undefined
+) =>
+    segment(
+        "EKT",
+        leistungserbringergruppeCode(leistungserbringergruppe),
+        char(positionsnummer, 6),
+        decimal(amount, 4, 2),
+        decimal(abrechnungspositionPrice, 10, 2),
+        startDateTime ? date(startDateTime) : undefined,
+        decimal(kilometersDriven, 4, 2),
+        startDateTime ? time(startDateTime) : undefined,
+        endDateTime ? time(endDateTime) : undefined,
+        startDateTime && endDateTime
+            ? int(duration(startDateTime, endDateTime, "minutes"), 0, 9999)
+            : undefined
+    );
 
 /** Zuzahlung
  * 
