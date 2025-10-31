@@ -1,23 +1,23 @@
-/** based on document: 
- *  - Sonstige Leistungserbringer, Technische Anlage 1 für die maschinelle Abrechnung, 
+/** based on document:
+ *  - Sonstige Leistungserbringer, Technische Anlage 1 für die maschinelle Abrechnung,
  *    Kapitel 5.5.3.6 SLLA: E (Krankentransportleistungen)
  *  - Verordnungsformular für Krankenhauseinweisung: Muster 2
- * 
-  * see docs/documents.md for more info
-  */
+ *
+ * see docs/documents.md for more info
+ */
 
-import { segment } from "../../edifact/builder"
-import { char, decimal, int, varchar } from "../../edifact/formatter"
-import { date, duration, time } from "../../formatter"
-import { ZuzahlungsartSchluessel } from "../codes"
-import { LaenderkennzeichenSchluessel } from "../../country_codes"
-import { KrankentransportVerordnung } from "./types"
-import { Leistungserbringergruppe, leistungserbringergruppeCode } from "../types"
+import { segment } from "../../edifact/builder";
+import { char, decimal, int, varchar } from "../../edifact/formatter";
+import { date, duration, time } from "../../formatter";
+import { ZuzahlungsartSchluessel } from "../codes";
+import { LaenderkennzeichenSchluessel } from "../../country_codes";
+import { KrankentransportVerordnung } from "./types";
+import { Leistungserbringergruppe, leistungserbringergruppeCode } from "../types";
 
 /** Segments for SLLA E message (Krankentransportleistungen) */
 
-/** Krankentransportleistungen 
- * 
+/** Krankentransportleistungen
+ *
  *  Information about where the patient was picked up, and where he was dropped of
  */
 export const KTL = (
@@ -38,19 +38,20 @@ export const KTL = (
     /** Mandatory if the drop off location was outside of Germany */
     dropOffLaenderkennzeichen: LaenderkennzeichenSchluessel | undefined,
     /** City/Place name at which the pationt was dropped of, if known */
-    dropOffPlaceName: string | undefined,
-) => segment(
-    "KTL",
-    int(id, 0, 999),
-    varchar(pickupStreetAndHousenumber, 30),
-    varchar(pickupPostalCode, 7),
-    pickupLaenderkennzeichen,
-    varchar(pickupPlaceName, 25),
-    varchar(dropOffStreetAndHousenumber, 30),
-    varchar(dropOffPostalCode, 7),
-    dropOffLaenderkennzeichen,
-    varchar(dropOffPlaceName, 25),
-)
+    dropOffPlaceName: string | undefined
+) =>
+    segment(
+        "KTL",
+        int(id, 0, 999),
+        varchar(pickupStreetAndHousenumber, 30),
+        varchar(pickupPostalCode, 7),
+        pickupLaenderkennzeichen,
+        varchar(pickupPlaceName, 25),
+        varchar(dropOffStreetAndHousenumber, 30),
+        varchar(dropOffPostalCode, 7),
+        dropOffLaenderkennzeichen,
+        varchar(dropOffPlaceName, 25)
+    );
 
 /** Einzelfallnachweis Krankentransport  */
 export const EKT = (
@@ -61,6 +62,8 @@ export const EKT = (
     amount: number,
     /** Price of one abrechnungsposition */
     abrechnungspositionPrice: number,
+    /** Date at which the service was provided */
+    serviceDate: Date,
     /** How many kilometers were driven, if applicable */
     kilometersDriven: number | undefined,
     /** Date and time at which the service started */
@@ -74,7 +77,7 @@ export const EKT = (
         char(positionsnummer, 6),
         decimal(amount, 4, 2),
         decimal(abrechnungspositionPrice, 10, 2),
-        startDateTime ? date(startDateTime) : undefined,
+        date(serviceDate),
         decimal(kilometersDriven, 4, 2),
         startDateTime ? time(startDateTime) : undefined,
         endDateTime ? time(endDateTime) : undefined,
@@ -84,11 +87,11 @@ export const EKT = (
     );
 
 /** Zuzahlung
- * 
+ *
  *  Must be added for service provided that requires a co-payment by he insuree according to
  *  § 61 SGB V Satz 1
  */
- export const ZUK = (
+export const ZUK = (
     /** same as KTL.id */
     id: number,
     /** gross price including VAT if applicable
@@ -97,55 +100,53 @@ export const EKT = (
     bruttobetrag: number,
     zuzahlungsart?: ZuzahlungsartSchluessel | undefined,
     /** gesetzliche Zuzahlung je Leistung */
-    gesetzlicheZuzahlungBetrag?: number | undefined,
-) => segment(
-    "ZUK",
-    int(id, 0, 999),
-    decimal(bruttobetrag, 10, 2),
-    zuzahlungsart,
-    decimal(gesetzlicheZuzahlungBetrag, 10, 2)
-)
+    gesetzlicheZuzahlungBetrag?: number | undefined
+) =>
+    segment(
+        "ZUK",
+        int(id, 0, 999),
+        decimal(bruttobetrag, 10, 2),
+        zuzahlungsart,
+        decimal(gesetzlicheZuzahlungBetrag, 10, 2)
+    );
 
-/** Zusatzinfo Verordnung 
- * 
+/** Zusatzinfo Verordnung
+ *
  *  Additional info about prescription.
- * 
+ *
  *  See
  *    Verordnungsformular für Krankenhauseinweisung: Muster 2
  *  for how the prescription looks
-*/
+ */
 export const ZKT = ({
     betriebsstaettennummer,
     vertragsarztnummer,
     zuzahlung,
     verordnungsDatum,
     unfall,
-    sonstigeEntschaedigung
-}: KrankentransportVerordnung) => segment(
-    "ZKT",
-    varchar(betriebsstaettennummer ?? "999999999", 9),
-    varchar(vertragsarztnummer ?? "999999999", 9),
-    zuzahlung,
-    verordnungsDatum ? date(verordnungsDatum) : undefined,
-    unfall,
     sonstigeEntschaedigung,
-)
+}: KrankentransportVerordnung) =>
+    segment(
+        "ZKT",
+        varchar(betriebsstaettennummer ?? "999999999", 9),
+        varchar(vertragsarztnummer ?? "999999999", 9),
+        zuzahlung,
+        verordnungsDatum ? date(verordnungsDatum) : undefined,
+        unfall,
+        sonstigeEntschaedigung
+    );
 
-/** Betrags-Summen 
- * 
+/** Betrags-Summen
+ *
  *  Although this segment is common in all the different SLLA segments, it has a different content in each
- * 
+ *
  *  NOTE: When this segment is used, the calculation of SLGA.GES needs to be adjusted!
-*/
+ */
 export const BES = (
     /** gross price including VAT if applicable
      *  = sum of all(round(EKT.abrechnungspositionPrice * EKT.amount + (MWS.mehrwertsteuerBetrag ?? 0)))
      */
     gesamtbruttobetrag: number,
     /** = sum of all ZUK.gesetzlicheZuzahlungBetrag */
-    gesetzlicheZuzahlungBetrag?: number | undefined,
-) => segment(
-    "BES",
-    decimal(gesamtbruttobetrag, 10, 2),
-    decimal(gesetzlicheZuzahlungBetrag, 10, 2)
-)
+    gesetzlicheZuzahlungBetrag?: number | undefined
+) => segment("BES", decimal(gesamtbruttobetrag, 10, 2), decimal(gesetzlicheZuzahlungBetrag, 10, 2));
