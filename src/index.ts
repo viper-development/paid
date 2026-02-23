@@ -126,8 +126,15 @@ export {
     groupInvoicesByRecipientSGBXI, 
     createTransmissionSGBXI,
     validateVersicherter,
-    validateLeistungserbringer
+    validateLeistungserbringer,
+    findRecipientsForSGBVKrankentransport,
+    createTransmissionSGBVKrankentransport,
 } from "./transmission/index";
+export type {
+    SGBVKrankentransportInvoice,
+    SGBVKrankentransportInvoiceWithRecipient,
+    SGBVKrankentransportTransmission,
+} from "./types";
 export { formattedDateForEmail } from "./transmission/email"
 
 export { 

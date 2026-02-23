@@ -19,6 +19,8 @@ import { makeNutzdaten as makeNutzdatenSGBXI, groupInvoiceByRecipient as groupIn
 import { makeAnwendungsreferenz as makeAnwendungsreferenzSGBXI, makeDateiname as makeDateinameSGBXI } from "../sgb-xi/filenames";
 import { constraintsInvoice as constraintsInvoiceSGBXI } from "../sgb-xi/validation";
 
+export { findRecipientsForSGBVKrankentransport, createTransmissionSGBVKrankentransport } from "./sgb_v_krankentransport";
+
 /**
  * Group a list of SGB XI invoices by corresponsing recipients. The recipients will be determined from institutionList.
  * An institutionList can be either retrieved from calling `deserializeInstitutionLists` on the 

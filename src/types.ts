@@ -14,6 +14,8 @@ import {
     VerarbeitungskennzeichenSchluessel as VerarbeitungskennzeichenSchluesselSGBV,
 } from "./sgb-v/codes"
 import { Invoice } from "./sgb-xi/types"
+import { Einzelrechnung } from "./sgb-v/types"
+import { Abrechnungsfall as KrankentransportAbrechnungsfall } from "./sgb-v/krankentransport/types"
 import { ValidationError } from "./validation/index"
 import { CareProviderLocationSchluessel, Institution as KostentraegerInstitution } from "./kostentraeger/types"
 import { Leistungsart } from "./kostentraeger"
@@ -175,6 +177,32 @@ export type Amounts = {
     /** gem. §28 Abs. 2 SGB XI */
     beihilfebetrag: number
     mehrwertsteuerbetrag: number
+}
+
+export type SGBVKrankentransportInvoice = {
+    rechnung: Einzelrechnung
+    abrechnungsfaelle: KrankentransportAbrechnungsfall[]
+}
+
+export type SGBVKrankentransportInvoiceWithRecipient = SGBVKrankentransportInvoice & {
+    recipient: Recipient
+}
+
+export type SGBVKrankentransportTransmission = {
+    email: Email
+    payloadFile: File
+    instructionFile: File
+    unencryptedPayloadFile: File
+    abrechnungsfaelle: KrankentransportAbrechnungsfall[]
+    anwendungsreferenz: string
+    fileCreationDate: Date
+    datenaustauschreferenz: number
+    laufendeDatenannahmeImJahr: number
+    sender: Institution
+    recipient: Recipient
+    verarbeitungskennzeichen: VerarbeitungskennzeichenSchluessel
+    korrekturlieferung: number | null
+    testIndicator: TestIndicator
 }
 
 /** A method signature implemented by several functions that group invoices by recipient in different ways. */
