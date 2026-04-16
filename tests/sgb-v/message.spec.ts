@@ -72,7 +72,7 @@ describe("SGB V messages", () => {
             zuzahlungUndEigenanteilBetrag: 12.0,
             tarifkennzeichen: "XXX",
         }], calculateGesamtsummen)).toEqual({
-            header: [["SLGA", "16", "0", "0"]],
+            header: [["SLGA", "20", "0", "0"]],
             segments: [
                 segment("FKT", "01", undefined, "000000001", "000000002", "123456789", "000000005"),
                 segment("REC", ["555", "3"], "20211212", "1"),
@@ -104,7 +104,7 @@ describe("SGB V messages", () => {
                 email: "cheers@brobo.de"
             }
         }, [], calculateGesamtsummen)).toEqual({
-            header: [["SLGA", "16", "0", "0"]],
+            header: [["SLGA", "20", "0", "0"]],
             segments: [
                 segment("FKT", "01", "J", "000000009", "000000002", undefined, "000000005"),
                 segment("REC", ["555", "0"], "20211212", "1"),
