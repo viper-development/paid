@@ -15,7 +15,8 @@ describe("Auftragsdatei writer", () => {
             unencryptedNutzdatenSizeBytes: 999666,
             encryptedNutzdatenSizeBytes: 1333222,
             isTest: false,
-            transferNumber: 22
+            transferNumber: 22,
+            charset: "I8"
         })).toEqual(
             "500000"+
             "01"+
@@ -69,7 +70,8 @@ describe("Auftragsdatei writer", () => {
             unencryptedNutzdatenSizeBytes: 999666,
             encryptedNutzdatenSizeBytes: 1333222,
             isTest: false,
-            transferNumber: 22
+            transferNumber: 22,
+            charset: "I8" as const
         }
 
         expect(() => write({ ...auftrag, 

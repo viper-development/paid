@@ -17,11 +17,11 @@ import {
 import { Gesamtsummen } from "../sgb-v/types";
 import { transliterateRecursively } from "../transcoding";
 import {
-    encodeI8,
-    getNonConformingCharactersI8,
-    isEncodableI8,
-    transliterateI8,
-} from "../transcoding/din66003drv";
+    encodeI1,
+    getNonConformingCharactersI1,
+    isEncodableI1,
+    transliterateI1,
+} from "../transcoding/iso88591";
 import {
     constraintsBillingData,
     constraintsRecipient,
@@ -154,12 +154,12 @@ export const createTransmissionSGBVKrankentransport = async (
         return cancelWith(error("requiredValueMissing", "recipient.certificate"));
     }
 
-    if (!isEncodableI8(nutzdaten)) {
-        const invalidCharacters = getNonConformingCharactersI8(nutzdaten).join(" ");
+    if (!isEncodableI1(nutzdaten)) {
+        const invalidCharacters = getNonConformingCharactersI1(nutzdaten).join(" ");
         return cancelWith(error("invalidCharacters", undefined, { invalidCharacters }));
     }
 
-    const unencryptedNutzdaten = encodeI8(nutzdaten);
+    const unencryptedNutzdaten = encodeI1(nutzdaten);
     let auftragsdaten = "";
     let encryptedNutzdaten = new ArrayBuffer(0);
 
@@ -183,6 +183,7 @@ export const createTransmissionSGBVKrankentransport = async (
             encryptedNutzdatenSizeBytes: encryptedNutzdaten.byteLength,
             isTest: billingData.testIndicator != "2",
             transferNumber,
+            charset: "I1",
         });
     } catch (thrownError) {
         return cancelWith(
@@ -192,7 +193,7 @@ export const createTransmissionSGBVKrankentransport = async (
 
     const unencryptedPayloadFile = makeFile(unencryptedNutzdaten, filename);
     const payloadFile = makeFile(new Uint8Array(encryptedNutzdaten), filename);
-    const instructionFile = makeFile(encodeI8(auftragsdaten), filename + ".AUF");
+    const instructionFile = makeFile(encodeI1(auftragsdaten), filename + ".AUF");
     const email = billingEmail(sender, recipientEmail, payloadFile, instructionFile);
     const fileCreationDate = new Date();
 
@@ -241,7 +242,7 @@ const validateAndTransliterate = async (
                 abrechnungsfaelle: invoiceWithRecipient.abrechnungsfaelle,
             },
         },
-        transliterateI8,
+        transliterateI1,
     );
 
     const recipientCertificateResult = await isValidCertificate(

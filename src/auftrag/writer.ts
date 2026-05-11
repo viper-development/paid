@@ -59,7 +59,7 @@ export default function write(auftragsdatei: Auftrag): string {
         // encrypted size of the referenced Nutzdatendatei in bytes (12 digits)
         auftragsdatei.encryptedNutzdatenSizeBytes.toString().padStart(12, "0"), 
         // charset (2 chars). I1 = ISO-8859-1, I8: ISO 8-Bit according to DIN 66303 DRV 8
-        "I8",
+        auftragsdatei.charset,
         // compression (2 digits).
         // 00 = none, 02 = gzip, 03 = zip (one file), 07 = bzip2, 13 = zip (several files)
         "00",

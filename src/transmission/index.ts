@@ -229,6 +229,7 @@ const createTransmission = async (
             encryptedNutzdatenSizeBytes: encryptedNutzdaten.byteLength,
             isTest: billingData.testIndicator != "2",
             transferNumber,
+            charset: "I8",
         });
     } catch (thrownError) {
         return cancelWith(error("throwsError", undefined, undefined, (thrownError as Error)?.message));

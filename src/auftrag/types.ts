@@ -39,4 +39,9 @@ export type Auftrag = {
      *  0-999. It should loop back to 0 when 1000 is reached.
      */
     transferNumber: number
+
+    /** Character set of the referenced Nutzdatendatei (Anlage 2, field ZEICHENSATZ).
+     *  "I1" = ISO 8859-1, "I8" = DIN 66303 DRV 8.
+     *  For §302 SGB V (Sonstige Leistungserbringer), this must be "I1". */
+    charset: "I1" | "I8"
 }
