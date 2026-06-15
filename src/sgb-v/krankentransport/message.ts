@@ -13,7 +13,7 @@ export const makeMessage = (
     abrechnungsfaelle: Abrechnungsfall[]
 ): Message => {
     return {
-        header: elements(["SLLA", "20", "0", "0"]),
+        header: elements(["SLLA", "21", "0", "0"]),
         segments: [
             FKT("01", rechnung),
             REC(rechnung),

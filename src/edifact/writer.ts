@@ -2,14 +2,19 @@ import { segment } from "./builder"
 import { Interchange, Segment, Element, ServiceStringAdvice, Message } from "./types"
 
 /** Writes an EDIFACT interchange.
- *  
+ *
  *  The does only support syntax UNOC version 3, so, requires the input to be encoded with ISO 8859-1.
- * 
+ *
  *  The implementation is based on the documentation from
  *
  *  https://www.gs1.org/docs/EDI/eancom/2012/ean02s3/part1/part1_05.htm
+ *
+ *  By default a UNA service string advice segment is written at the start of the interchange.
+ *  Some profiles forbid it: the SGB V §302 Nutzdatei uses the fixed, agreed Steuerzeichen and must
+ *  begin directly with UNB, so those callers pass `includeServiceStringAdvice = false`. The same
+ *  separators are still used for formatting/escaping; only the UNA segment is omitted.
  */
-export default function stringify(interchange: Interchange) {
+export default function stringify(interchange: Interchange, includeServiceStringAdvice = true) {
     if (interchange.decimalNotation.length != 1) {
         throw new Error("decimalNotation must be one character (usually ',' or '.'")
     }
@@ -35,7 +40,7 @@ export default function stringify(interchange: Interchange) {
     ]
 
     return [
-        stringifyServiceStringAdvice(serviceStringAdvice),
+        ...(includeServiceStringAdvice ? [stringifyServiceStringAdvice(serviceStringAdvice)] : []),
         ...allSegments.map(segment => stringifySegment(segment, serviceStringAdvice))
     ].join("\r\n")
 }

@@ -55,8 +55,9 @@ export const makeNutzdaten = (
         decimalNotation: ",",
     };
 
-    // Stringify to EDIFACT format
-    const nutzdaten = edifactWriter(interchange);
+    // Stringify to EDIFACT format. §302 uses the fixed, agreed Steuerzeichen and the Nutzdatei must
+    // begin directly with UNB, so no UNA service string advice is written.
+    const nutzdaten = edifactWriter(interchange, false);
 
     return {
         nutzdaten,

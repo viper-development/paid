@@ -1,13 +1,13 @@
-/** based on documents: 
+/** based on documents:
  *  - Sonstige Leistungserbringer, Technische Anlage 1 für die maschinelle Abrechnung
- * 
+ *
   * see docs/documents.md for more info
   */
 
-import { 
+import {
     TestIndicator
 } from "../types"
-import { 
+import {
     getSummenstatus,
     LeistungserbringerSammelgruppenSchluessel,
     SummenstatusSchluessel,
@@ -17,19 +17,19 @@ import { elements } from "../edifact/builder"
 import { char, fixedInt } from "../edifact/formatter"
 import { date, time } from "../formatter"
 import { Message, Segment } from "../edifact/types"
-import { 
-    FKT, 
-    FKT_Sammelrechnung, 
-    GES, 
-    NAM, 
-    REC, 
-    REC_Sammelrechnung, 
-    SKO, 
+import {
+    FKT,
+    FKT_Sammelrechnung,
+    GES,
+    NAM,
+    REC,
+    REC_Sammelrechnung,
+    SKO,
     UST
 } from "./segments_slga"
-import { 
-    Einzelrechnung, 
-    Sammelrechnung, 
+import {
+    Einzelrechnung,
+    Sammelrechnung,
     Skonto,
     BaseAbrechnungsfall,
     Gesamtsummen
@@ -43,7 +43,7 @@ export const makeInterchangeHeader = (
     /** date at which this file has been created */
     dateCreated: Date,
     /** serial number that should be increased by one for each transmission to the recipient
-     *  (encryptedForIK). A value from 00001-99999. It should loop back to 00001 before 100000 is 
+     *  (encryptedForIK). A value from 00001-99999. It should loop back to 00001 before 100000 is
      *  reached. */
     datenaustauschreferenz: number,
     /** To which group of health care providers the care provider belongs */
@@ -68,10 +68,10 @@ export const makeSLGA_SammelrechnungMessage = <T extends BaseAbrechnungsfall>(
     abrechnungsfaelle: T[],
     calculateGesamtsummen: (abrechnungsfaelle: T[]) => Gesamtsummen
 ): Message => ({
-    header: elements(["SLGA", "20", "0", "0"]),
+    header: elements(["SLGA", "21", "0", "0"]),
     segments: [
-        /* NOTE: if any other verarbeitungskennzeichen than "01" is supported, the calculation of 
-                GES needs to be adjusted, which only applies to Heilmittelerbringer right now */ 
+        /* NOTE: if any other verarbeitungskennzeichen than "01" is supported, the calculation of
+                GES needs to be adjusted, which only applies to Heilmittelerbringer right now */
         FKT_Sammelrechnung("01", rechnung),
         REC_Sammelrechnung(rechnung),
         ...createSkontoList(rechnung.skontos),
@@ -85,11 +85,11 @@ export const makeSLGAMessage = <T extends BaseAbrechnungsfall>(
     abrechnungsfaelle: T[],
     calculateGesamtsummen: (abrechnungsfaelle: T[]) => Gesamtsummen
 ): Message => ({
-    header: elements(["SLGA", "20", "0", "0"]),
+    header: elements(["SLGA", "21", "0", "0"]),
     segments: [
-        /* NOTE: if any other verarbeitungskennzeichen than "01" is supported, the calculation of 
-                 GES needs to be adjusted */ 
-        FKT("01", rechnung), 
+        /* NOTE: if any other verarbeitungskennzeichen than "01" is supported, the calculation of
+                 GES needs to be adjusted */
+        FKT("01", rechnung),
         REC(rechnung),
         UST(rechnung.leistungserbringer),
         ...createSkontoList(rechnung.skontos),
@@ -104,8 +104,8 @@ const createSkontoList = (skontos: Skonto[] | undefined): Segment[] =>
     (skontos ?? []).slice(0,9).map(skonto => SKO(skonto))
 
 /** Returns a bunch of GES segments:
- * 
- *  Always a GES with Summenstatus "00" first and then each one GES segment for the other 
+ *
+ *  Always a GES with Summenstatus "00" first and then each one GES segment for the other
  *  Summenstatus if any Abrechnungspositions are actually ascribed to that Summenstatus.
  */
 const calculateGESList = <T extends BaseAbrechnungsfall>(
@@ -135,7 +135,7 @@ const getAbrechnungsfaelleBySummenstatus = <T extends BaseAbrechnungsfall>(
     if (summenstatusSchluessel == "00") {
         return abrechnungsfaelle
     } else {
-        return abrechnungsfaelle.filter(fall => 
+        return abrechnungsfaelle.filter(fall =>
             getSummenstatus(fall.versicherter.versichertenstatus) == summenstatusSchluessel
         )
     }
