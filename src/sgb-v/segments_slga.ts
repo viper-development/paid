@@ -173,20 +173,22 @@ export const GES_VKZ3 = (
  * 
  *  Name(s) and contacts of health care provider */
 export const NAM = (institution: Institution): Segment => {
-    // we need exactly 3 Ansprechpartner - the rest is filled with undefined 
-    const ansprechpartner3: Array<string | undefined> = [undefined, undefined, undefined]
-    for (let i = 0; i < 3; i++) {
+    /* TA v21 defines exactly 4 fields: Name 1 = name of the biller, Name 2 and Name 3 = each an
+       Ansprechpartner with phone number, Name 4 = email. So at most 2 Ansprechpartner fit in and
+       both slots are always written (with undefined if empty) so that the email lands in Name 4 */
+    const ansprechpartner2: Array<string | undefined> = [undefined, undefined]
+    for (let i = 0; i < 2; i++) {
         const ansprechnpartner = institution.ansprechpartner[i]
         if (ansprechnpartner) {
             // f.e. {name: "John", phone: "123"} becomes "John, 123"
-            ansprechpartner3[i] = Object.values(ansprechnpartner).filter(Boolean).join(", ").substring(0, 30)
+            ansprechpartner2[i] = Object.values(ansprechnpartner).filter(Boolean).join(", ").substring(0, 30)
         }
     }
 
     return segment(
         "NAM",
         institution.name.substring(0, 30),
-        ...ansprechpartner3,
+        ...ansprechpartner2,
         institution.email?.substring(0, 70)
     )
 }

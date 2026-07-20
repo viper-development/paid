@@ -21,8 +21,9 @@ describe("SGB V messages", () => {
                 ansprechpartner: [
                     { name: "wursti plutz", phone: "123465" },
                     { name: "wursti plutz2", phone: "000011" },
+                    // only 2 Ansprechpartner fit into NAM (TA v21), the rest is cut off
                     { name: "wursti plutz3", phone: "445667" },
-                    { name: "wursti plutz4", phone: "778466" }, // this is cut off
+                    { name: "wursti plutz4", phone: "778466" },
                 ],
                 email: "hallo@wallo.de",
                 abrechnungscode: "16",
@@ -82,7 +83,7 @@ describe("SGB V messages", () => {
                 segment("GES", "00", "123,00", "155,00", "32,00"),
                 segment("GES", "31", "80,00", "100,00", "20,00"),
                 segment("GES", "51", "43,00", "55,00", "12,00"),
-                segment("NAM", "LE", "wursti plutz, 123465", "wursti plutz2, 000011", "wursti plutz3, 445667", "hallo@wallo.de")
+                segment("NAM", "LE", "wursti plutz, 123465", "wursti plutz2, 000011", "hallo@wallo.de")
             ]
         })
     })
@@ -110,7 +111,7 @@ describe("SGB V messages", () => {
                 segment("REC", ["555", "0"], "20211212", "1"),
                 // no skontos => no SKO segments
                 // no rechnungen => no GES segments
-                segment("NAM", "RS", undefined, undefined, undefined, "cheers@brobo.de")
+                segment("NAM", "RS", undefined, undefined, "cheers@brobo.de")
             ]
         })
     })

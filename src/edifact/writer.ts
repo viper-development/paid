@@ -1,4 +1,5 @@
 import { segment } from "./builder"
+import { fixedInt } from "./formatter"
 import { Interchange, Segment, Element, ServiceStringAdvice, Message } from "./types"
 
 /** Writes an EDIFACT interchange.
@@ -32,10 +33,11 @@ export default function stringify(interchange: Interchange, includeServiceString
     const allSegments: Segment[] = [
         segment("UNB", ...interchange.header),
          ...messageSegments,
-        segment("UNZ", 
-            interchange.messages.length.toString(),
+        segment("UNZ",
+            // Anzahl Nachrichten (0036): the §302 TA requires 6 digits with leading zeros
+            fixedInt(interchange.messages.length, 6),
             // the fifth element in the header is the reference no of this interchange
-            interchange.header[4] 
+            interchange.header[4]
         )
     ]
 
@@ -51,11 +53,14 @@ const messagesToSegments = (messages: Message[]): Segment[] => {
     return messages.flatMap(message => messageToSegments(message, messageNo++))
 }
 
+/* The §302 TA requires the service segment counters to be fixed-length with leading zeros:
+   Nachrichtenreferenznummer (0062) in UNH and UNT = 5 digits, Anzahl Einheiten (0074) in
+   UNT = 6 digits, e.g. "00001" for the first message. */
 const messageToSegments = (message: Message, no: number): Segment[] => [
-    segment("UNH", no.toString(), ...message.header),
+    segment("UNH", fixedInt(no, 5), ...message.header),
     ...message.segments,
     // +2 because this is the segment count including UNH and UNT
-    segment("UNT", (message.segments.length + 2).toString(), no.toString())
+    segment("UNT", fixedInt(message.segments.length + 2, 6), fixedInt(no, 5))
 ]
 
 const stringifyServiceStringAdvice = (ssa: ServiceStringAdvice): string =>
