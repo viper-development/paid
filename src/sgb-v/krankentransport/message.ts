@@ -1,7 +1,6 @@
 import { elements } from "../../edifact/builder";
 import { Message, Segment } from "../../edifact/types";
-import { FKT, REC } from "../segments_slga";
-import { INV, NAD } from "../segments_slla";
+import { FKT, INV, NAD, REC } from "../segments_slla";
 import { Einzelrechnung, createLeistungserbringergruppe } from "../types";
 import { Abrechnungsfall } from "./types";
 import { sumBy } from "../../utils";
